@@ -1,0 +1,49 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SegLunLobe</title>
+    <link rel="stylesheet" href="{% static '/styles/style_history.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light transparent">
+      <a class="navbar-brand" href="#">
+          <img src="{% static '\images\logo.png' %}" alt="">
+      </a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="http://127.0.0.1:8000/">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="http://127.0.0.1:8000/segmentation">Segmentation <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="http://127.0.0.1:8000/history">History <span class="sr-only">(current)</span></a>
+        </li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        {% for element in elements%}
+        <div class="card text-center">
+          <img src="..." class="card-img-top" alt="..." height="320" width="400">
+          <div class="card-body">
+            <h5 class="card-title">{{element.numberPacient}}</h5>
+            <p class="card-text">
+              Date: {{element.Date}}
+            </p>
+            <p class="card-text">
+              Disease: {{element.Disease}}
+            </p>
+            <a href="#" class="btn btn-primary">See segmentation</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>SegLunLobe</title>
+    <link rel="stylesheet" href="{% static '/styles/style_home.css' %}">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light transparent">
+    <a class="navbar-brand" href="#">
+        <img src="{% static '\images\logo.png' %}" alt="">
+    </a>
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="http://127.0.0.1:8000/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="http://127.0.0.1:8000/segmentation">Segmentation <span class="sr-only">(current)</span></a>
+      </li>
+      {% if request.user.is_authenticated %}
+      <li class="nav-item">
+          <a class="nav-link" href="http://127.0.0.1:8000/history">History <span class="sr-only">(current)</span></a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  <div class="conatiner main-text">
+    <p class="text-start">
+      Hello dear doctor, this project is needed to segmentation of lung lobe
+    </p>
+    <p class="text-start">
+      To save segmentation history, please log in
+    </p>
+  </div>
+  {% if request.user.is_authenticated %}
+  <p> {{user.username}}</p>
+  <a type="submit" class="btn auth" href="{% url 'logout' %}">Loogut</a>
+  {% else%}
+  <a href="{% url 'login' %}">Login</a>
+  <a href="{% url 'register' %}">Register</a>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,53 @@
+body{
+  margin-left: 200px;
+  margin-right: 200px;
+}
+
+.navbar {
+  padding: 0px;
+  margin-top: 50px;
+  justify-content: space-between;
+}
+
+nav{
+  padding: 0px;
+}
+
+.navbar-light .navbar-nav .active>.nav-link{
+  color: #4C55A6;
+}
+
+.main-text{
+  margin-top: 50px;
+}
+
+.form{
+  padding: 0px;
+  margin-top: 35px;
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.row{
+  justify-content: start;
+}
+.row:last-child{
+  margin-top: 10px;
+}
+
+.reg{
+  width: 200px;
+  color: #4C55A6;
+}
+
+.form-control{
+  border-radius: 0px;
+  border: 1px solid black;
+}
+
+.auth{
+  width: 200px;
+  background-color: #4C55A6;
+  color: white;
+  border-radius: 0px;
+}
