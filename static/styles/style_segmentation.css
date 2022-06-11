@@ -14,23 +14,30 @@ body{
     justify-content: space-between;
 }
 
+.input_pole{
+    margin-bottom: 0px;
+}
+
 nav{
     padding: 0px;
+}
+
+p{
+    margin-bottom: 0px;
 }
 
 .navbar-light .navbar-nav .active>.nav-link{
     color: #4C55A6;
 }
-
-p{
-    margin-bottom: 30px;
-}
-
 .row{
-    margin: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .segmentation{
+    margin-top: 10px;
     background-color: #4C55A6;
     color: white;
 }
@@ -42,5 +49,9 @@ p{
 .col{
     padding-right: 0px;
     padding-left: 0px;
-    justify-content: center;
+}
+
+.segm{
+    width: 200px;
+    color: #4C55A6;
 }

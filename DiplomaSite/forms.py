@@ -1,14 +1,8 @@
 from django import forms
-
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
-class UserForm(forms.Form):
-    email = forms.EmailField(required = True)
-    password = forms.CharField(widget = forms.PasswordInput())
 
-class UploadFileForm(forms.Form):
-    file = forms.FileField()
 
 class RegisterUserForm(UserCreationForm):
     username = forms.CharField(label='Login', widget=forms.TextInput(attrs={'class': 'form-input'}))
@@ -23,3 +17,7 @@ class RegisterUserForm(UserCreationForm):
 class LoginUserForm(AuthenticationForm):
     username = forms.CharField(label='Login', widget=forms.TextInput(attrs={'class': 'form-input'}))
     password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+
+class SegmentationForm(forms.Form):
+    file = forms.FileField(label = 'Add File', widget = forms.FileInput(attrs = {'class':'form-input, file-input'}))
+    number_slide = forms.CharField(label = ' Add number slide', widget = forms.NumberInput(attrs = {'class':'form-input'}))

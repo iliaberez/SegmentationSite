@@ -9,12 +9,13 @@ from django.contrib.auth.views import LoginView
 from django.template.response import TemplateResponse
 from DiplomaSite.models import ElementHistory
 from DiplomaSite.utils import get_chart, get_chart_pred, get_graph
-from .forms import LoginUserForm, RegisterUserForm, UserForm, UploadFileForm
+from .forms import LoginUserForm, RegisterUserForm, SegmentationForm
 from keras.models import load_model
 from keras import utils
 import nibabel as nib
 import numpy as np
 import matplotlib.pyplot as plt
+from django.core.files.storage import FileSystemStorage
 
 global model
 model = load_model('static/segmantation_lung_lobe_200epochs.hdf5', compile=False)
@@ -26,25 +27,32 @@ def index(request):
     return render(request, "DiplomaSite/home.html")
  
 def segmentation(request):
-    temp = []
+    form = SegmentationForm()
     if request.method == 'POST':
+        temp = []
         center = [256, 256]
-        epi_img = nib.load('static/4.nii')
-        epi_img_data = epi_img.get_fdata()
-        epi_img_data = epi_img_data[:,:,61]
-        image = np.zeros(np.concatenate((512,512), axis=None))
-        image = image + epi_img_data[:,:]
-        image = image[center[0]-200:center[0]+200,center[1]-160:center[1]+160]
-        chart = get_chart(image)
-        tempList = np.array(temp.append(image))
-        tempList = utils.normalize(temp, axis= 1)
-        image_dataset_encoded = np.expand_dims(tempList, axis = 3)
-        predict = model.predict(image_dataset_encoded)
-        chart_predict = get_chart_pred(predict)
-        context = {'chart': chart, 'predict' : chart_predict}
+        form = SegmentationForm(request.POST)
+        if(form.is_valid):
+            file = request.FILES['file']
+            fs = FileSystemStorage()
+            filename = fs.save(file.name, file)
+            number_slide = int(request.POST['number_slide'])
+            epi_img = nib.load(filename)
+            epi_img_data = epi_img.get_fdata()
+            epi_img_data = epi_img_data[:,:,number_slide]
+            image = np.zeros(np.concatenate((512,512), axis=None))
+            image = image + epi_img_data[:,:]
+            image = image[center[0]-200:center[0]+200,center[1]-160:center[1]+160]
+            chart = get_chart(image)
+            tempList = np.array(temp.append(image))
+            tempList = utils.normalize(temp, axis= 1)
+            image_dataset_encoded = np.expand_dims(tempList, axis = 3)
+            predict = model.predict(image_dataset_encoded)
+            chart_predict = get_chart_pred(predict)
+            context = {'chart': chart, 'predict' : chart_predict, 'form': form}
         return render(request, "DiplomaSite/segmentation.html", context)
     else:
-        return render(request, "DiplomaSite/segmentation.html")
+        return render(request, "DiplomaSite/segmentation.html", {'form': form})
  
 def history(request):
     data = []

@@ -30,14 +30,23 @@
     <p>
       Add NIFTI file and choose number slides for segmentation
     </p>
-    <form method="POST">
-      {% csrf_token %}  
-      <div class="row">
-        <input type="file" name="newfile"></input>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter number slide">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %} 
+      <div class="row justify-content-start">
+        {% for f in form %}
+        <div style="width: 18rem ;">
+          <label class= 'form-label' for="{{f.id_for_label}}">{{f.label}}</label>
+          <p class="input-pole">{{f}}</p>
+        </div>
+        {% endfor %} 
       </div>
-      <input type="submit">Segmentation</input>
+      {% if chart %}
+      <input type="reset" class='btn segmentation' value="Cancel"></input>
+      {% else %}
+      <input type="submit" class='btn segmentation' value="Segmentation"></input>
+      {% endif %}
     </form>
+    {% if chart %}
     <div class="block-images">
       <div class="row row-cols-2 justify-content-center">
         <div class="col align-self-center">
@@ -54,6 +63,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
 </body>
 </html>
