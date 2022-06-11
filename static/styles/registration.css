@@ -1,0 +1,18 @@
+.card{
+    margin-top: 15%;
+    width: 20rem;
+    padding: 20px;
+}
+
+.input-pole{
+    border: 1px rgba(0, 0, 0, 0.534);
+    margin-left: auto;
+}
+
+.button{
+    width: 200px;
+    margin-top: 15px;
+    background-color: #4C55A6;
+    color: white;
+    border-radius: 0px;
+}

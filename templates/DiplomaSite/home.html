@@ -28,6 +28,16 @@
       {% endif %}
     </ul>
   </nav>
+  {% if request.user.is_authenticated %}
+  <div class="conatiner main-text">
+    <p class="text-start">
+      Hello dear doctor, this project is needed to segmentation of lung lobe
+    </p>
+    <p class="text-start">
+      You can save your history of segmentation in this site
+    </p>
+  </div>
+  {% else %}
   <div class="conatiner main-text">
     <p class="text-start">
       Hello dear doctor, this project is needed to segmentation of lung lobe
@@ -36,12 +46,15 @@
       To save segmentation history, please log in
     </p>
   </div>
+  {% endif %}
   {% if request.user.is_authenticated %}
-  <p> {{user.username}}</p>
-  <a type="submit" class="btn auth" href="{% url 'logout' %}">Loogut</a>
+  <div class="row" style="margin-left: 0px;">
+    <p style="color:#4C55A6; font-size: 18px;"> {{user.username}}</p>
+    <a type="submit" class="btn auth" href="{% url 'logout' %}" style="margin-left: 20px;">Loogut</a>
+  </div>
   {% else%}
-  <a href="{% url 'login' %}">Login</a>
-  <a href="{% url 'register' %}">Register</a>
+  <a href="{% url 'login' %}" class='btn auth' >Login</a>
+  <a href="{% url 'register' %}"class='btn reg'>Register</a>
   {% endif %}
 </body>
 </html>
