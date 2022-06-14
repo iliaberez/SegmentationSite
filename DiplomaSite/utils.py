@@ -23,7 +23,7 @@ def get_chart(img):
 
 def get_chart_pred(input):
     img = np.argmax(input, axis=3)[0,:,:]
-    img = np.flip(img)
+    img = img.transpose()
     plt.switch_backend('AGG')
     plt.figure(figsize=(4,4))
     plt.imshow(img, cmap = 'jet')

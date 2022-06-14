@@ -1,7 +1,11 @@
 from django.db import models
 
-class ElementHistory(object):
-    def __init__(self, numberPacient, Date, Disease):
-        self.numberPacient = numberPacient
-        self.Date = Date
-        self.Disease = Disease
+def uploadmodel_file_upload_to(instance, filename):
+    return 'uploads/%s/%s' % (instance.user.username, filename)
+
+class SegmentationPost(models.Model):
+    author = models.CharField(max_length= 20)
+    number_slide = models.IntegerField()
+    original_file = models.FileField(upload_to=uploadmodel_file_upload_to)
+    segm_file = models.FileField(upload_to=uploadmodel_file_upload_to)
+    description = models.CharField(max_length= 20)

@@ -21,9 +21,11 @@
       <li class="nav-item active">
           <a class="nav-link" href="http://127.0.0.1:8000/segmentation">Segmentation <span class="sr-only">(current)</span></a>
       </li>
+      {% if request.user.is_authenticated %}
       <li class="nav-item">
           <a class="nav-link" href="http://127.0.0.1:8000/history">History <span class="sr-only">(current)</span></a>
       </li>
+      {% endif %}
     </ul>
   </nav>
   <div class="container-fluid main-block">
@@ -41,9 +43,9 @@
         {% endfor %} 
       </div>
       {% if chart %}
-      <input type="reset" class='btn segmentation' value="Cancel"></input>
+      <input type="submit" class='btn segmentation' value="Cancel" name='cancel'></input>
       {% else %}
-      <input type="submit" class='btn segmentation' value="Segmentation"></input>
+      <input type="submit" class='btn segmentation' value="Segmentation" name="segmentation"></input>
       {% endif %}
     </form>
     {% if chart %}

@@ -30,16 +30,9 @@
       <div class="row">
         {% for element in elements%}
         <div class="card text-center">
-          <img src="..." class="card-img-top" alt="..." height="320" width="400">
+          <img src="{{element}}" class="card-img-top" alt="..." height="320" width="400">
           <div class="card-body">
-            <h5 class="card-title">{{element.numberPacient}}</h5>
-            <p class="card-text">
-              Date: {{element.Date}}
-            </p>
-            <p class="card-text">
-              Disease: {{element.Disease}}
-            </p>
-            <a href="#" class="btn btn-primary">See segmentation</a>
+            <a href="#" class="btn btn-primary">See details</a>
           </div>
         </div>
         {% endfor %}
