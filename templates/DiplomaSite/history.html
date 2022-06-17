@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <title>SegLunLobe</title>
-    <link rel="stylesheet" href="{% static '/styles/style_history.css' %}">
+    <link rel="stylesheet" href="{% static '/styles/history.css' %}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light transparent">
@@ -27,12 +27,16 @@
       </ul>
     </nav>
     <div class="container-fluid">
-      <div class="row">
+      <div class="row justify-content-start">
         {% for element in elements%}
         <div class="card text-center">
-          <img src="{{element}}" class="card-img-top" alt="..." height="320" width="400">
+          <div class="image-wrapper">
+            <img src="{{element.image_path}}" class="card-img-top" alt="...">
+          </div>
           <div class="card-body">
-            <a href="#" class="btn btn-primary">See details</a>
+            <p>{{element.name_pacient}}</p>
+            <a href="{{element.url}}" class="btn details" style="width: 10rem;">See details</a>
+            <input type="submit" class="btn btn-danger" value='Delete' style="width: 10rem;"></input>
           </div>
         </div>
         {% endfor %}

@@ -4,8 +4,8 @@
 }
 
 body{
-    margin-left: 200px;
-    margin-right: 200px;
+    margin-left: 10%;
+    margin-right: 10%;
 }
   
 .navbar {
@@ -29,21 +29,11 @@ p{
 .navbar-light .navbar-nav .active>.nav-link{
     color: #4C55A6;
 }
-.row{
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
 
 .segmentation{
     margin-top: 10px;
     background-color: #4C55A6;
     color: white;
-}
-
-.block-images{
-    margin-top: 50px;
 }
 
 .col{
@@ -54,4 +44,28 @@ p{
 .segm{
     width: 200px;
     color: #4C55A6;
+}
+
+.row{
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.image-wrapper{
+    height: 300px;
+    overflow: hidden;
+}
+
+.image-wrapper img{
+    position: relative;
+    top: -52px;
+}
+
+.stack{
+    height: 400px;
+}
+
+.image-wrapper img .two{
+    top:-400px;
+    opacity: 0.3;
 }

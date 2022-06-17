@@ -20,4 +20,6 @@ class LoginUserForm(AuthenticationForm):
 
 class SegmentationForm(forms.Form):
     file = forms.FileField(label = 'Add File', widget = forms.FileInput(attrs = {'class':'form-input, file-input'}))
-    number_slide = forms.CharField(label = ' Add number slide', widget = forms.NumberInput(attrs = {'class':'form-input'}))
+    number_slide = forms.CharField(label = 'Add number slide', widget = forms.NumberInput(attrs = {'class':'form-input'}))
+    name_pacient = forms.CharField(label = 'Add name Pacient', widget = forms.TextInput(attrs = {'class':'form-input input-name-pacient'}))
+    description = forms.CharField(label = 'Add description', widget= forms.Textarea(attrs= {'class':'form-input input-description'}))

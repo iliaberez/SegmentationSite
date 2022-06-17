@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <title>SegLunLobe</title>
-    <link rel="stylesheet" href="{% static '/styles/style_segmentation.css' %}">
+    <link rel="stylesheet" href="{% static '/styles/segmentation.css' %}">
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-light transparent">
@@ -34,38 +34,66 @@
     </p>
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %} 
-      <div class="row justify-content-start">
-        {% for f in form %}
-        <div style="width: 18rem ;">
-          <label class= 'form-label' for="{{f.id_for_label}}">{{f.label}}</label>
-          <p class="input-pole">{{f}}</p>
+      <div class="row justify-content-start" style="margin-top: 15px;">
+        {% if chart %}
+        <input type="hidden" name="file" value="{{file}}">
+        {% else %}
+        <div style="display:flex; flex-direction: column;">
+          <label class= 'form-label' for="id_file">File</label>
+          {{form.file}}
         </div>
-        {% endfor %} 
+        {% endif %}
+        <div style="display:flex; flex-direction: column;">
+          <label class= 'form-label' for="id_number_slide">Number slide</label>
+          <input id="id_number_slide" type="number" name="number_slide" value="{{ number_slide }}">
+        </div>
       </div>
       {% if chart %}
-      <input type="submit" class='btn segmentation' value="Cancel" name='cancel'></input>
       {% else %}
-      <input type="submit" class='btn segmentation' value="Segmentation" name="segmentation"></input>
+      <input type="submit" class='btn segmentation' value="Segmentation" name="segmentation" style="margin-top: 15px;"></input>
       {% endif %}
-    </form>
-    {% if chart %}
-    <div class="block-images">
-      <div class="row row-cols-2 justify-content-center">
-        <div class="col align-self-center">
-          <p>Origin</p>
-          {% if chart %}
-          <img src="data:image/png;base64, {{chart|safe}}" alt="...">
-          {% endif %}
-        </div>
-        <div class="col align-self-center">
-          <p>Segmentation</p>
-          {% if predict %}
-          <img src="data:image/png;base64, {{predict|safe}}" alt="...">
-          {% endif %}
+      {% if chart %} 
+      <div class="block-images" style="margin-top: 15px; display: flex; height: 350px;">
+        <div style="display: flex;">
+          <div>
+            <p>Origin</p>
+            <div class="image-wrapper">
+              <img src="data:image/png;base64, {{chart|safe}}" alt="...">
+              <input type="hidden" name="chart" value="{{chart}}">
+            </div>
+          </div>
+          <div>
+            <p>Segmentation</p>
+            <div class="image-wrapper">
+              <img src="data:image/png;base64, {{predict|safe}}" alt="...">
+              <input type="hidden" name="predict" value="{{predict}}">
+            </div>
+          </div>
+          <div>
+            <p>Superposition</p>
+            <div class="stack image-wrapper"> 
+              <img src="data:image/png;base64, {{chart|safe}}" class="one" alt="...">
+              <img src="data:image/png;base64, {{predict|safe}}" class="two" style= "top:-320px; opacity: 0.3;"alt="...">
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    {% endif %}
+      {% if request.user.is_authenticated %}
+      <div style="display:flex; margin-top: 15px; flex-direction: column; width: 25rem;">
+        <label class= 'form-label' for="id_name_pacient">Add name pacient or other name</label>
+        <input id="id_name_pacient" type="text" name="name_pacient">
+      </div>
+      <div style="display:flex; margin-top: 15px; flex-direction: column; width: 25rem">
+        <label class= 'form-label' for="id_description">Add description</label>
+        <textarea name="description" id="id_description" cols="30" rows="10"></textarea>
+      </div>
+      <div style="display: flex; margin-top: 15px;">
+        <input type="submit" class='btn segmentation' value="Save" name="save" style="margin-right: 30px;"></input>
+        <input type="submit" class='btn segmentation' value="Cancel" name='cancel'></input>
+      </div>
+      {% endif %}
+      {% endif %}
+    </form>
   </div>
 </body>
 </html>

@@ -15,9 +15,8 @@ def get_graph():
 
 def get_chart(img):
     plt.switch_backend('AGG')
-    plt.figure(figsize=(4,4))
+    plt.figure(figsize=(4,3))
     plt.imshow(img[:,:].T, cmap = 'gray')
-    plt.tight_layout()
     chart = get_graph()
     return chart
 
@@ -25,8 +24,7 @@ def get_chart_pred(input):
     img = np.argmax(input, axis=3)[0,:,:]
     img = img.transpose()
     plt.switch_backend('AGG')
-    plt.figure(figsize=(4,4))
+    plt.figure(figsize=(4,3))
     plt.imshow(img, cmap = 'jet')
-    plt.tight_layout()
     chart = get_graph()
     return chart

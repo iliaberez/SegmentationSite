@@ -36,56 +36,93 @@ def segmentation(request):
     form = SegmentationForm()
     temp = []
     center = [256,256]
+    base_path = 'media/upload/'
+    if request.user.is_authenticated :
+        base_path = 'media/upload/' + request.user.username + '/'
+    fs = FileSystemStorage(location= base_path)
     if request.method == 'POST':
         if 'segmentation' in request.POST:
             form = SegmentationForm(request.POST)
+            file = request.FILES['file']
+            filename = fs.save(file.name, file)
+            number_slide = int(request.POST['number_slide'])
+            epi_img = nib.load(base_path + filename)
+            epi_img_data = epi_img.get_fdata()
+            os.remove(os.path.join(base_path + filename))
+            epi_img_data = epi_img_data[:,:,number_slide]
+            image = np.zeros(np.concatenate((512,512), axis=None))
+            image = image + epi_img_data[:,:]
+            image = image[center[0]-200:center[0]+200,center[1]-160:center[1]+160]
+            chart = get_chart(image)
+            tempList = np.array(temp.append(image))
+            tempList = utils.normalize(temp, axis= 1)
+            image_dataset_encoded = np.expand_dims(tempList, axis = 3)
+            predict = model.predict(image_dataset_encoded)
+            chart_predict = get_chart_pred(predict)
+            context = {'file': file, 'number_slide': number_slide,'chart': chart, 'predict' : chart_predict, 'form': form}
+            return render(request, "DiplomaSite/segmentation.html", context)
+        elif 'save' in request.POST:
+            form = SegmentationForm(request.POST)
             if form.is_valid:
-                file = request.FILES['file']
-                base_path = 'media/upload/'
-                if request.user.is_authenticated :
-                    base_path = 'media/upload/' + request.user.username + '/'
-                fs = FileSystemStorage(location= base_path)
-                filename = fs.save(file.name, file)
                 number_slide = int(request.POST['number_slide'])
-                epi_img = nib.load(base_path + filename)
-                epi_img_data = epi_img.get_fdata()
-                os.remove(os.path.join(base_path + filename))
-                epi_img_data = epi_img_data[:,:,number_slide]
-                image = np.zeros(np.concatenate((512,512), axis=None))
-                image = image + epi_img_data[:,:]
-                image = image[center[0]-200:center[0]+200,center[1]-160:center[1]+160]
-                chart = get_chart(image)
-                tempList = np.array(temp.append(image))
-                tempList = utils.normalize(temp, axis= 1)
-                image_dataset_encoded = np.expand_dims(tempList, axis = 3)
-                predict = model.predict(image_dataset_encoded)
-                chart_predict = get_chart_pred(predict)
-                if request.user.is_authenticated :
-                    original_file_name = 'original_' + (file.name).split('.')[0] + '.png'
-                    segm_file_name = 'segm_' +(file.name).split('.')[0] + '.png'
-                    fs.save(original_file_name, ContentFile(base64.b64decode(chart),'image.png'))
-                    fs.save(segm_file_name, ContentFile(base64.b64decode(chart_predict),'image.png'))
-                    post = SegmentationPost.objects.create(
-                        author = request.user.username, 
-                        number_slide = number_slide, 
-                        original_file = original_file_name, 
-                        segm_file = segm_file_name, 
-                        description = '')
-                context = {'chart': chart, 'predict' : chart_predict, 'form': form}
-                return render(request, "DiplomaSite/segmentation.html", context)
+                name_pacient = request.POST['name_pacient']
+                description = request.POST['description']
+                filename = request.POST['file']
+                chart = request.POST.get('chart')
+                chart_predict = request.POST.get('predict')
+                description = request.POST['description']
+                original_file_name = 'original_' + (filename).split('.')[0] + '.png'
+                segm_file_name = 'segm_' +(filename).split('.')[0] + '.png'
+                fs.save(original_file_name, ContentFile(base64.b64decode(chart),'image.png'))
+                fs.save(segm_file_name, ContentFile(base64.b64decode(chart_predict),'image.png'))
+                post = SegmentationPost.objects.create(
+                    author = request.user.username, 
+                    number_slide = number_slide, 
+                    original_file = original_file_name, 
+                    segm_file = segm_file_name, 
+                    name_pacient = name_pacient,
+                    description = description)
+                form = SegmentationForm()
+            return render(request, "DiplomaSite/segmentation.html", {'form': form})
         elif 'cancel' in request.POST:
             form = SegmentationForm()
-            return render(request, "DiplomaSite/segmentation.html", form)
+            return render(request, "DiplomaSite/segmentation.html", {'form': form})
     else:
         return render(request, "DiplomaSite/segmentation.html", {'form': form})
  
 def history(request):
-    base_path = 'media/upload/' + request.user.username
     temp = SegmentationPost.objects.filter(author = request.user.username)
-    data = []
-    data.append(base_path + temp[0].original_file.url)
-    print(data[0])
+    base_path = '/media/upload/' + request.user.username + '/'
+    url = '/segmentations/' + request.user.username
+    data = []   
+    for element in temp:
+        data.append(HistoryPost(
+            element.id,
+            element.name_pacient,
+            base_path + element.original_file.url.split('/')[2],
+            url + '/' + str(element.id) + '/'
+        ))
     return render(request, "DiplomaSite/history.html", context = {'elements' : data})
+
+class HistoryPost():
+    def __init__(self, id, name_pacient, image_path, url):
+        self.id = id
+        self.name_pacient = name_pacient
+        self.image_path = image_path
+        self.url = url
+
+def details(request, username, SegPostId):
+    data = SegmentationPost.objects.filter(author = username, id = SegPostId)
+    base_path = '/media/upload/' + request.user.username + '/'
+    data = data[0]
+    context = {
+        'username' : username,
+        'chart' : base_path + data.original_file.url.split('/')[2],
+        'pred': base_path + data.segm_file.url.split('/')[2],
+        'name_pacient' : data.name_pacient,
+        'description' : data.description,
+    }
+    return render(request, "DiplomaSite/details.html", context)
 
 class RegisterUser(CreateView):
     form_class = RegisterUserForm   
