@@ -22,6 +22,8 @@ from django.core.files.storage import FileSystemStorage
 import matplotlib.pyplot as plt
 import base64
 from django.core.files.base import ContentFile
+from django.contrib.auth.models import User
+import uuid
 
 global model
 model = load_model('static/segmantation_lung_lobe_200epochs.hdf5', compile=False)
@@ -63,6 +65,7 @@ def segmentation(request):
             return render(request, "DiplomaSite/segmentation.html", context)
         elif 'save' in request.POST:
             form = SegmentationForm(request.POST)
+            user = User.objects.get(username = request.user.username)
             if form.is_valid:
                 number_slide = int(request.POST['number_slide'])
                 name_pacient = request.POST['name_pacient']
@@ -71,8 +74,13 @@ def segmentation(request):
                 chart = request.POST.get('chart')
                 chart_predict = request.POST.get('predict')
                 description = request.POST['description']
-                original_file_name = 'original_' + (filename).split('.')[0] + '.png'
-                segm_file_name = 'segm_' +(filename).split('.')[0] + '.png'
+                generator = str(uuid.uuid4())
+                original_file_name = 'original_' + generator +  '.png'
+                segm_file_name = 'segm_' + generator + '.png'
+                if os.path.isfile(base_path + original_file_name):
+                    generator = str(uuid.uuid4())
+                    original_file_name = 'original_' + generator +  '.png'
+                    segm_file_name = 'segm_' + generator + '.png'
                 fs.save(original_file_name, ContentFile(base64.b64decode(chart),'image.png'))
                 fs.save(segm_file_name, ContentFile(base64.b64decode(chart_predict),'image.png'))
                 post = SegmentationPost.objects.create(
@@ -82,6 +90,7 @@ def segmentation(request):
                     segm_file = segm_file_name, 
                     name_pacient = name_pacient,
                     description = description)
+                post.viewers.add(user)
                 form = SegmentationForm()
             return render(request, "DiplomaSite/segmentation.html", {'form': form})
         elif 'cancel' in request.POST:
@@ -93,20 +102,24 @@ def segmentation(request):
 def history(request):
     if request.method == 'POST':
         if 'delete' in request.POST:
+            print('delete')
+            base_path = 'media/upload/' + request.user.username + '/'
             idPost = request.POST['idPost']
             data = SegmentationPost.objects.get(id = idPost)
+            os.remove(base_path + data.original_file.url.split('/')[2],)
+            os.remove(base_path + data.segm_file.url.split('/')[2],)
             data.delete()
             return HttpResponseRedirect("/history/")
-    temp = SegmentationPost.objects.filter(author = request.user.username)
-    base_path = '/media/upload/' + request.user.username + '/'
-    url = '/segmentations/' + request.user.username
+    temp = SegmentationPost.objects.filter(viewers__id = request.user.id)
+    base_path = '/media/upload/'
+    url = '/segmentations'
     data = []   
     for element in temp:
         data.append(HistoryPost(
             element.id,
             element.author,
             element.name_pacient,
-            base_path + element.original_file.url.split('/')[2],
+            base_path + element.author + '/' + element.original_file.url.split('/')[2],
             url + '/' + str(element.id) + '/'
         ))
     return render(request, "DiplomaSite/history.html", context = {'elements' : data})
@@ -119,14 +132,15 @@ class HistoryPost():
         self.image_path = image_path
         self.url = url
 
-def details(request, username, SegPostId):
-    data = SegmentationPost.objects.get(author = username, id = SegPostId)
+def details(request, SegPostId):
+    data = SegmentationPost.objects.get(id = SegPostId)
+    viewers = list(User.objects.filter(segmentationpost__id = SegPostId))
     form = None
+    error = None
     if request.method == 'POST':
         if 'edit' in request.POST:
             form = SegmentationForm(
                 initial={
-                    'author': username,
                     'name_pacient': data.name_pacient,
                     'description': data.description
                 }
@@ -143,14 +157,35 @@ def details(request, username, SegPostId):
             form = None
         if 'cancel' in request.POST:
             form = None
-    base_path = '/media/upload/' + request.user.username + '/'
+        if 'add' in request.POST:
+            viewer = request.POST['viewer']
+            user = User.objects.filter(username = viewer).first()
+            if user and user not in viewers:
+                data.viewers.add(user)
+                viewers.append(user)
+            elif user in viewers:
+                error = 'This user has already been added'
+            else:
+                error = 'User not find'
+        if 'delete' in request.POST:
+            current_name = request.POST['current_name']
+            delete_user = User.objects.get(username = current_name)
+            data.viewers.remove(delete_user)
+            viewers = list(User.objects.filter(segmentationpost__id = SegPostId))
+    for viewer in viewers:
+        if data.author == viewer.username:
+            viewers.remove(viewer)
+            break
+    base_path = '/media/upload/' + data.author + '/'
     context = {
         'form': form,
-        'username' : username,
         'chart' : base_path + data.original_file.url.split('/')[2],
         'pred': base_path + data.segm_file.url.split('/')[2],
         'name_pacient' : data.name_pacient,
         'description' : data.description,
+        'author': data.author,
+        'viewers' : viewers,
+        'error': error
     }
     return render(request, "DiplomaSite/details.html", context)
 

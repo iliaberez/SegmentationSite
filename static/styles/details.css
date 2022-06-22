@@ -18,6 +18,12 @@ body{
     margin-bottom: 0px;
 }
 
+.back{
+    margin-bottom: 10px;
+    background-color: #4C55A6;
+    color: white;
+}
+
 nav{
     padding: 0px;
 }
@@ -58,20 +64,20 @@ p{
 
 .image-wrapper img{
     position: relative;
-    top: -52px;
 }
 
 .stack{
     height: 400px;
 }
 
-.image-wrapper img .two{
-    top:-400px;
-    opacity: 0.3;
-}
-
 .segmentation{
     margin-top: 10px;
     background-color: #4C55A6;
     color: white;
+}
+
+.add{
+    color: white;
+    background-color: #4C55A6;
+    border-radius: 0;
 }

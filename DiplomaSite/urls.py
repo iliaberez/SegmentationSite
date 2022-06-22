@@ -11,7 +11,7 @@ urlpatterns = [
     path('register/', views.RegisterUser.as_view(), name='register'),
     path('segmentation/', views.segmentation, name='segmentation'),
     path('history/', views.history, name='history'),
-    path('segmentations/<str:username>/<int:SegPostId>/', views.details)
+    path('segmentations/<int:SegPostId>/', views.details)
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -31,8 +31,11 @@
   {% if form %}
   {% else %}
   <div class="container-fluid main-block">
+    <a type="submit" class="back btn" value='Back' href="http://127.0.0.1:8000/history" style="width: 9rem;">
+      Back
+    </a>
     <p style="margin-bottom: 15px;">
-      Author: {{username}} 
+      Author: {{author}} 
     </p>
     <p style="margin-bottom: 15px;">
       Detail infromation about: {{name_pacient}}
@@ -54,7 +57,7 @@
         <p>Superposition</p>
         <div class="stack image-wrapper"> 
           <img src="{{chart}}" class="one" alt="...">
-          <img src="{{pred}}" class="two" style= "top:-452px; opacity: 0.3;"alt="...">
+          <img src="{{pred}}" class="two" style= "top:-300px; opacity: 0.3;"alt="...">
         </div>
       </div>
     </div>
@@ -64,8 +67,7 @@
   </div>
   {% endif %}
   <div>
-    {% if form%}
-    {% else %}
+    {% if not form and author == request.user.username%}
     <form method="POST">
       {% csrf_token %} 
       <input type="submit" class="btn segmentation" value='Edit' style="width: 9rem;" name="edit"></input>
@@ -89,5 +91,41 @@
     </form>
     {% endif %}
   </div>
+  {% if not form and author == request.user.username %}
+  <div style = "display:flex; margin-top: 15px; flex-direction: column; width: 25rem;">
+    <form method="POST">
+      {% csrf_token %}
+      <label>Add viewers</label>
+      <div class="row">
+        <input id="id_viewer" type="text" name="viewer"></input>
+        <input type="submit" class="btn add" value='Add' style="width: 5rem;" name="add"></input>
+      </div>
+      {% if error %}
+      <p style="color:red; margin-top: 5px;">{{error}}</p>
+      {% endif %}
+    </form>
+  </div>
+  {% if viewers %}
+  <div>
+    <table class="table" style="margin-top: 15px; width: 30rem;">
+      <tbody>
+        {% for viewer in viewers %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td>{{viewer.username}}</td>
+          <td>
+            <form method="POST">
+              {% csrf_token %}
+            <input type="submit" class="btn btn-danger" value='Delete' style="width: 5rem;" name="delete"></input>
+            <input type="hidden" name="current_name" value="{{viewer.username}}"></input>
+          </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div> 
+  {% endif %}
+  {% endif %}
 </body>
 </html>

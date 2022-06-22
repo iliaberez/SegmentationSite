@@ -26,6 +26,7 @@
         </li>
       </ul>
     </nav>
+    {% if elements %}
     <div class="container-fluid">
       <div class="row justify-content-start">
         {% for element in elements%}
@@ -36,16 +37,21 @@
           <div class="card-body">
             <p>Author: {{element.author}}</p>
             <p>Name: {{element.name_pacient}}</p>
-            <form method="POST"></form>
+            <form method="POST">
             {% csrf_token %} 
               <a href="{{element.url}}" class="btn details" style="width: 9rem;">See details</a>
+              {% if element.author == request.user.username %}
               <input type="submit" class="btn btn-danger" value='Delete' style="width: 9rem;" name="delete"></input>
               <input type="hidden" value='{{element.id}}' name="idPost"></input>
+              {% endif %}
             </form>
           </div>
         </div>
         {% endfor %}
       </div>
     </div>
+    {% else %}
+    <p style="margin-left: 10%; margin-right: 10%;">You don't have segmentation history yet</p>
+    {% endif %}
   </body>
 </html>
