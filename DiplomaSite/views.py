@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import CreateView
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.views import LoginView
 from django.template.response import TemplateResponse
 from DiplomaSite.models import SegmentationPost
@@ -91,6 +91,12 @@ def segmentation(request):
         return render(request, "DiplomaSite/segmentation.html", {'form': form})
  
 def history(request):
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            idPost = request.POST['idPost']
+            data = SegmentationPost.objects.get(id = idPost)
+            data.delete()
+            return HttpResponseRedirect("/history/")
     temp = SegmentationPost.objects.filter(author = request.user.username)
     base_path = '/media/upload/' + request.user.username + '/'
     url = '/segmentations/' + request.user.username
@@ -98,6 +104,7 @@ def history(request):
     for element in temp:
         data.append(HistoryPost(
             element.id,
+            element.author,
             element.name_pacient,
             base_path + element.original_file.url.split('/')[2],
             url + '/' + str(element.id) + '/'
@@ -105,17 +112,40 @@ def history(request):
     return render(request, "DiplomaSite/history.html", context = {'elements' : data})
 
 class HistoryPost():
-    def __init__(self, id, name_pacient, image_path, url):
+    def __init__(self, id, author, name_pacient, image_path, url):
         self.id = id
+        self.author = author
         self.name_pacient = name_pacient
         self.image_path = image_path
         self.url = url
 
 def details(request, username, SegPostId):
-    data = SegmentationPost.objects.filter(author = username, id = SegPostId)
+    data = SegmentationPost.objects.get(author = username, id = SegPostId)
+    form = None
+    if request.method == 'POST':
+        if 'edit' in request.POST:
+            form = SegmentationForm(
+                initial={
+                    'author': username,
+                    'name_pacient': data.name_pacient,
+                    'description': data.description
+                }
+            )
+            context = {
+                'form' : form,
+            }
+            return render(request, "DiplomaSite/details.html", context)
+        if 'save' in request.POST:
+            form = SegmentationForm(request.POST)
+            data.name_pacient = request.POST['name_pacient']
+            data.description = request.POST['description']
+            data.save()
+            form = None
+        if 'cancel' in request.POST:
+            form = None
     base_path = '/media/upload/' + request.user.username + '/'
-    data = data[0]
     context = {
+        'form': form,
         'username' : username,
         'chart' : base_path + data.original_file.url.split('/')[2],
         'pred': base_path + data.segm_file.url.split('/')[2],

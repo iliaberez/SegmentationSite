@@ -34,9 +34,14 @@
             <img src="{{element.image_path}}" class="card-img-top" alt="...">
           </div>
           <div class="card-body">
-            <p>{{element.name_pacient}}</p>
-            <a href="{{element.url}}" class="btn details" style="width: 10rem;">See details</a>
-            <input type="submit" class="btn btn-danger" value='Delete' style="width: 10rem;"></input>
+            <p>Author: {{element.author}}</p>
+            <p>Name: {{element.name_pacient}}</p>
+            <form method="POST"></form>
+            {% csrf_token %} 
+              <a href="{{element.url}}" class="btn details" style="width: 9rem;">See details</a>
+              <input type="submit" class="btn btn-danger" value='Delete' style="width: 9rem;" name="delete"></input>
+              <input type="hidden" value='{{element.id}}' name="idPost"></input>
+            </form>
           </div>
         </div>
         {% endfor %}

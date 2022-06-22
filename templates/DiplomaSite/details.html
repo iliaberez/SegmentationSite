@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <title>SegLunLobe</title>
-    <link rel="stylesheet" href="{% static '/details.css' %}">
+    <link rel="stylesheet" href="{% static '/styles/details.css' %}">
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-light transparent">
@@ -28,6 +28,8 @@
       {% endif %}
     </ul>
   </nav>
+  {% if form %}
+  {% else %}
   <div class="container-fluid main-block">
     <p style="margin-bottom: 15px;">
       Author: {{username}} 
@@ -59,6 +61,33 @@
     <p>
       Description: {{description}}
     </p>
+  </div>
+  {% endif %}
+  <div>
+    {% if form%}
+    {% else %}
+    <form method="POST">
+      {% csrf_token %} 
+      <input type="submit" class="btn segmentation" value='Edit' style="width: 9rem;" name="edit"></input>
+    </form>
+    {% endif %}
+    {% if form %}
+    <form method="POST">
+      {% csrf_token %} 
+      <div style="display:flex; margin-top: 15px; flex-direction: column; width: 25rem;">
+        <label class= 'form-label' for="id_name_pacient">Edit name pacient or other name</label>
+        <input id="id_name_pacient" type="text" name="name_pacient" value="{{form.name_pacient.value}}">
+      </div>
+      <div style="display:flex; margin-top: 15px; flex-direction: column; width: 25rem">
+        <label class= 'form-label' for="id_description">Edit description</label>
+        <textarea name="description" id="id_description" cols="30" rows="10">{{form.description.value}}</textarea>
+      </div>
+      <div style="display: flex; margin-top: 15px;">
+        <input type="submit" class='btn segmentation' value="Save" name="save" style="margin-right: 30px;"></input>
+        <input type="submit" class='btn segmentation' value="Cancel" name='cancel'></input>
+      </div>
+    </form>
+    {% endif %}
   </div>
 </body>
 </html>

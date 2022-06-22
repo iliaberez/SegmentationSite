@@ -69,3 +69,9 @@ p{
     top:-400px;
     opacity: 0.3;
 }
+
+.segmentation{
+    margin-top: 10px;
+    background-color: #4C55A6;
+    color: white;
+}
