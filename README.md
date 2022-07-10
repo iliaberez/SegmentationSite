@@ -39,6 +39,10 @@ https://drive.google.com/drive/folders/1nU9pa69pY5W-Lm7FYH55Idbm7A8bpF5m?usp=sha
 В других папках находяться маски для каждой доли соответствующего оригинального изображения.
 В файле intervals.txt находятся интервалы размеченных данных.
 
-## Пункт 6. Работа с нейронной сетью
+## Пункт 6. Работа с нейронной сетью.
 https://colab.research.google.com/drive/1OCTUgEyU7TOve_PnTc3viHiUpS5vTQKx?usp=sharing
 
+## Пункт 7. Рекомендации.
+Сгенерируйте свой секретный ключ для обеспечения безопасности
+https://djecrety.ir/
+Замените в файле setting.py в папке mysite
