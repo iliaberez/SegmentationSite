@@ -1,29 +1,22 @@
-from email.mime import base
-from multiprocessing import context
 import os
-import re
-from django.contrib.auth import logout, login
-from django.urls import reverse_lazy
-from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import CreateView
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.views import LoginView
-from django.template.response import TemplateResponse
-from DiplomaSite.models import SegmentationPost
-from DiplomaSite.utils import get_chart, get_chart_pred, get_graph
-from .forms import LoginUserForm, RegisterUserForm, SegmentationForm
-from keras.models import load_model
 from keras import utils
 import nibabel as nib
 import numpy as np
-import matplotlib.pyplot as plt
-from django.core.files.storage import FileSystemStorage
-import matplotlib.pyplot as plt
 import base64
+import uuid
+from keras.models import load_model
+from django.contrib.auth import logout, login
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.contrib.auth.views import LoginView
+from DiplomaSite.models import SegmentationPost
+from DiplomaSite.utils import get_chart, get_chart_pred
+from .forms import LoginUserForm, RegisterUserForm, SegmentationForm
+from django.core.files.storage import FileSystemStorage
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
-import uuid
 
 global model
 model = load_model('static/segmantation_lung_lobe_200epochs.hdf5', compile=False)
@@ -139,15 +132,8 @@ def details(request, SegPostId):
     error = None
     if request.method == 'POST':
         if 'edit' in request.POST:
-            form = SegmentationForm(
-                initial={
-                    'name_pacient': data.name_pacient,
-                    'description': data.description
-                }
-            )
-            context = {
-                'form' : form,
-            }
+            form = SegmentationForm(initial={'name_pacient': data.name_pacient, 'description': data.description})
+            context = {'form' : form}
             return render(request, "DiplomaSite/details.html", context)
         if 'save' in request.POST:
             form = SegmentationForm(request.POST)
